@@ -45,3 +45,19 @@ plt.xlabel("OF ratio")
 plt.grid()
 plt.savefig('isp_vs_OF.png', dpi = 400)
 plt.show()
+
+P_c = 1.52
+OF_3 = np.array([100, 102, 104, 106, 112, 120])
+vj_3 =  np.array([409.0, 406.9, 404.8, 402.8, 397.1, 390.2])
+isp_3 = vj_3*OF_3
+print(isp_3)
+
+plt.figure(3)
+plt.title("isp vs OF at Pc of 1.52 bars ")
+plt.plot(OF_3, isp_3, label = "isp")
+#plt.plot(turb_pr, Tmax_list, label = "Compressor Pressure Ratio")
+plt.ylabel("isp (m/s)")
+plt.xlabel("OF ratio")
+plt.grid()
+plt.savefig('isp_vs_OF_2.png', dpi = 400)
+plt.show()

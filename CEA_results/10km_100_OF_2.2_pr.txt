@@ -1,0 +1,93 @@
+
+
+         NASA-GLENN CHEMICAL EQUILIBRIUM PROGRAM CEA2, FEBRUARY 5, 2004
+                   BY  BONNIE MCBRIDE AND SANFORD GORDON
+      REFS: NASA RP-1311, PART I, 1994 AND NASA RP-1311, PART II, 1996
+
+ *******************************************************************************
+
+  
+ ### CEA analysis performed on Tue 26-Mar-2024 11:30:44
+  
+ # Problem Type: "Rocket" (Infinite Area Combustor)
+  
+ prob case=expander_v3____2829 ro equilibrium
+  
+ # Pressure (1 value):
+ p,bar= 0.576
+ # Chamber/Exit Pressure Ratio (1 value):
+ pi/p= 2.2
+  
+ # Oxidizer/Fuel Wt. ratio (1 value):
+ o/f= 100
+  
+ # You selected the following fuels and oxidizers:
+ reac
+ fuel C5H12,n-pentane   wt%=100.0000  t,k= 397.000
+ oxid Air               wt%=100.0000  t,k= 330.000
+  
+ # You selected these options for output:
+ # short version of output
+ output short
+ # Proportions of any products will be expressed as Mass Fractions.
+ output massf
+ # Heat will be expressed as siunits
+ output siunits
+  
+ # Input prepared by this script:/var/www/sites/cearun.grc.nasa.gov/cgi-bin/CEARU
+ N/prepareInputFile.cgi
+  
+ ### IMPORTANT:  The following line is the end of your CEA input file!
+ end
+
+              THEORETICAL ROCKET PERFORMANCE ASSUMING EQUILIBRIUM
+
+           COMPOSITION DURING EXPANSION FROM INFINITE AREA COMBUSTOR
+
+ Pin =     8.4 PSIA
+ CASE = expander_v3____
+
+             REACTANT                    WT FRACTION      ENERGY      TEMP
+                                          (SEE NOTE)     KJ/KG-MOL      K  
+ FUEL        C5H12,n-pentane              1.0000000   -133339.678    397.000
+ OXIDANT     Air                          1.0000000       802.180    330.000
+
+ O/F=  100.00000  %FUEL=  0.990099  R,EQ.RATIO= 0.154609  PHI,EQ.RATIO= 0.153321
+
+                 CHAMBER   THROAT     EXIT
+ Pinf/P            1.0000   1.8720   2.2000
+ P, BAR           0.57600  0.30770  0.26182
+ T, K              755.83   640.78   613.67
+ RHO, KG/CU M    2.6495-1 1.6695-1 1.4833-1
+ H, KJ/KG          9.1223  -116.57  -145.70
+ U, KJ/KG         -208.28  -300.88  -322.21
+ G, KJ/KG        -6076.02 -5275.44 -5086.33
+ S, KJ/(KG)(K)     8.0509   8.0509   8.0509
+
+ M, (1/n)          28.907   28.907   28.907
+ (dLV/dLP)t      -1.00000 -1.00000 -1.00000
+ (dLV/dLT)p        1.0000   1.0000   1.0000
+ Cp, KJ/(KG)(K)    1.1071   1.0779   1.0711
+ GAMMAs            1.3510   1.3640   1.3671
+ SON VEL,M/SEC      541.9    501.4    491.2
+ MACH NUMBER        0.000    1.000    1.133
+
+ PERFORMANCE PARAMETERS
+
+ Ae/At                      1.0000   1.0141
+ CSTAR, M/SEC                688.1    688.1
+ CF                         0.7286   0.8086
+ Ivac, M/SEC                 869.0    873.7
+ Isp, M/SEC                  501.4    556.5
+
+ MASS FRACTIONS
+
+ *Ar              0.01279  0.01279  0.01279
+ *CO2             0.03068  0.03068  0.03068
+ H2O              0.01483  0.01483  0.01483
+ *N2              0.74771  0.74771  0.74771
+ *O2              0.19399  0.19399  0.19399
+
+  * THERMODYNAMIC PROPERTIES FITTED TO 20000.K
+
+ NOTE. WEIGHT FRACTION OF FUEL IN TOTAL FUELS AND OF OXIDANT IN TOTAL OXIDANTS

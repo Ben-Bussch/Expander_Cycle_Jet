@@ -86,7 +86,7 @@ def compressor_temp(Tmin, Tmax_guess, cp_fit_coeff, specific_power):
         Tmax_guess += SP_error*1.0001 
         if SP_error < 0.001 and SP_error > -0.001:
             run = False
-    #print("Tmax guess:",Tmax_guess)
+    print("Tmax:",Tmax_guess)
     return Tmax_guess
 
 def T_to_P_ratio(Tmin, Tmax, gamma):
@@ -111,11 +111,11 @@ pmin = 150000 #Pa, needs to be around 150 kPa or more to ensure condensation at 
 cooling_pressure_drop = 300000 #Pressure drop over fuel cooling channels
 heating_pressure_drop = 600000 #Pressure drop over fuel heating channels
 cp_air_coeff = cp_polyfit(100, 4, path_air) #air cp is ~constant with pressure changes
-bleed_ratio = 0.15
-OF = 40
+bleed_ratio = 0.18
+OF = 48
 
 "Calculating Turbine Work"
-Tmax_list = np.linspace(350, 600, 100) #K
+Tmax_list = np.linspace(350, 500, 100) #K
 turb_pr = []
 comp_pr = []
 Tmin = 320 #K
@@ -135,7 +135,7 @@ for Tmax in Tmax_list:
     "Calculating Compressor Work"
     
     compressor_specific_power = -(turbine_specific_power+pump_specific_power)/(OF*bleed_ratio)
-    
+    print(compressor_specific_power)
     T_compressor = compressor_temp(T_ambiant, 500, cp_air_coeff, compressor_specific_power) 
     #print("Tempurature at end of compressor: ",T_compressor,"K")
     

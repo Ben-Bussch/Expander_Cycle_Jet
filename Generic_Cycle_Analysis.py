@@ -10,6 +10,7 @@ import numpy as np
 from sympy import *
 
 # This uses sympy, which is a library for symbolic maths (ie it can rearrange equations and find exact solutions)
+# sympy can also work to arbitrary precision (eg 100 decimals of pi) but can be somewhat slow for tricky maths (eg decimal powers)
 
 """ Reference numbers which aren't used yet"""
 
@@ -33,7 +34,8 @@ LCV_f = 46.4E6      # Lower calorific value of the fuel
 """ Symbols """
 
 # Symbols need to be defined for sympy to use them in symbolic equations.
-# I've divided them up by equation arbitrarily - they can be all defined at once.
+# I've divided them up by equation arbitrarily - they could be all defined at once.
+# Can't currently place any assumptions on the range of values they could take (ie real, positive), because they cannot be carried over into symbols passed as keys in keyword arguments.
 
 # Cp_ratio symbols
 Cp,Cv,gam = symbols('Cp,Cv,gam')
@@ -63,7 +65,7 @@ Adia_comp = Eq(T_in/(p_in**((gam_in-1)/gam_in)) , T_out/(p_out**((gam_out-1)/gam
 
 """ List of governing equations """
 
-# All governing equations can be grouped together in no particular order
+# Governing equations can be grouped together in no particular order
 
 gov_eqs = [Cp_ratio, SFEE, Enth, Adia_comp]
 
@@ -73,6 +75,8 @@ gov_eqs = [Cp_ratio, SFEE, Enth, Adia_comp]
 
 class Station:
     def __init__(self, governing_eqs, **known_vals):
+        
+        
         
         # Create a dictionary of values that define a station
         self.st_vars = { 'v'    :   None,
@@ -99,20 +103,11 @@ class Station:
         # Solve all governing equations simultaneously for any unknown values that can be calculated
         solutions = solve(self.st_eqs, list(self.st_vars.keys()), dict = True)
         
+        print(solutions)
         
         # Include any solved results in the dictionary
-        for key in self.st_vars:
-            try:
-                self.st_vars[key] = solutions[0][sympify(key)]
-                
-                print(key, 'solved')
-                
-            except:
-                if self.st_vars[key]:
-                    print(key, 'known')
-                else: 
-                    print(key,'not solvable')
-        
+        self.Include_sols(solutions)
+           
     
     def From_prev_st(self, prev_st, **inputs):
         """
@@ -123,40 +118,44 @@ class Station:
         prev_st : Station object
             The previous station to calculate new values from.
         **inputs : symbol = value
-            Any inputs between stations (eg work).
+            Any inputs between stations (eg work). Optional.
 
         Returns
         -------
-        None.
+        Dict
+            All inputs (eg work) between the stations
 
         """
+        #Create dictionary of potential inputs
+        all_inpts = { 'W'    :   None }
         
-        # Bring in dictionary of values from the previous station as 'value_in'
+        # Update potential inputs with given values
+        all_inpts.update(inputs)
+        
+        # Create a dictionary of values from the previous station with keys as: 'value_in'
         in_st_vars = dict([(key + '_in', value) for key, value in prev_st.State().items()])
         
-        # Create dictionary from this station's values as 'value_out'
+        # Create dictionary of values from this station with keys as 'value_out'
         out_st_vars = dict([(key + '_out', value) for key, value in self.st_vars.items()])
         
         # Concatenate these dictionaries and any inputs/outputs
-        in_out_st_vars = dict(in_st_vars, **dict(out_st_vars, **inputs))
+        all_st_vars = dict(in_st_vars, **dict(out_st_vars, **all_inpts))
         
-        # Substitute in and out values into *this state's* governing equations (locally)
-        temp_st_eqs = [eq.subs(in_out_st_vars) for eq in self.st_eqs]
+        # Substitute all values into *this state's* governing equations (only for this method, will not permanently alter this station's equations)
+        temp_st_eqs = [eq.subs(all_st_vars) for eq in self.st_eqs]
         
         # Solve for unknown 'out' values
-        solutions = solve(temp_st_eqs, list(out_st_vars.keys()), dict = True)
+        solutions = solve(temp_st_eqs, list(all_st_vars.keys()), dict = True)
         
-        for key in self.st_vars:
-            try:
-                self.st_vars[key] = solutions[0][sympify(key + '_out')]
-                
-                print(key, 'solved')
-                
-            except:
-                if self.st_vars[key]:
-                    print(key, 'known')
-                else: 
-                    print(key,'not solvable')
+        print(solutions)
+        
+        # Include any solved results in the dictionary
+        self.Include_sols(solutions, modifier = '_out')
+        
+        # Return any solved inputs
+        self.Include_sols(solutions, all_inpts)
+        
+        return all_inpts
         
     def State(self):
         """
@@ -170,18 +169,56 @@ class Station:
         """
         return self.st_vars
     
+    def Include_sols(self, solutions, dictionary = None, modifier = None):
+        dictionary = dictionary if dictionary is not None else self.st_vars
+        
+        for key in dictionary:
+            try:
+                # If there are multiple solutions, uses first returned. No intelligent solution selection possible yet (because assumptions won't work)
+                if modifier:
+                    dictionary[key] = solutions[0][sympify(key + modifier)]
+                else:
+                    dictionary[key] = solutions[0][sympify(key)]
+                
+                print(key, 'solved')
+                
+            except:
+                
+                if dictionary[key]:
+                    print(key, 'known')
+                
+                else: 
+                    print(key,'not solvable')
+    
 
 """ Set up stations in engine """
 
+# Example 1:
 
 print('------- Station 1 --------')
-St1 = Station(gov_eqs, m_dot = 1, v = 80, p = 100000, h = 0.01, Cv = 720, T = 293.15)
+St1 = Station(gov_eqs, m_dot = 1, v = 0, p = 100000, h = 0.01, Cv = 720, T = 293.15)
 print('------- Station 2 --------')
 St2 = Station(gov_eqs, m_dot = 1, v = 0.1, Cv = 720)
 
 # Solve station 2 from station 1, assuming work input of 2000 J/s
 print('------- Station 1 --> Station 2 --------')
-St2.From_prev_st(St1, W = -2000)
+inputs = St2.From_prev_st(St1, W = -2000)
 
+print('State variables at Station 1:', St1.State())
 print('State variables at Station 2:', St2.State())
+print('Inputs:', inputs)
+
+# Example 2:
     
+print('------- Station 3 --------')
+St3 = Station(gov_eqs, m_dot = 1, v = 0, p = 100000, h = 0.01, Cv = 720, T = 293.15)
+print('------- Station 4 --------')
+St4 = Station(gov_eqs, m_dot = 1, v = 0.1, Cv = 720, T = 295.134122023810)
+
+# Solve station 2 from station 1 with known temperature increase
+print('------- Station 3 --> Station 4 --------')
+inputs = St4.From_prev_st(St1)
+
+print('State variables at Station 3:', St3.State())
+print('State variables at Station 4:', St4.State())
+print('Inputs:', inputs)

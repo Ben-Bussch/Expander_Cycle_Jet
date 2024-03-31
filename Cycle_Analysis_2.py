@@ -107,8 +107,8 @@ cp_100_coeff = cp_polyfit(100, 2, path_pentane)
 cp_50_K = cp_integrand(500, cp_100_coeff)
 
 "Calculating Pump Work"
-rho = 600 #at 300K, constant with pressure change up till critical pressure (33 bar) and then increases
-pmin = 150000 #Pa, needs to be around 150 kPa or more to ensure condensation at 320K
+rho = 565 #at 350K, constant with pressure change up till critical pressure (33 bar) and then increases
+pmin = 500000 #Pa, needs to be around 150 kPa or more to ensure condensation at 320K
 cooling_pressure_drop = 600000 #Pressure drop over fuel cooling channels
 heating_pressure_drop = 600000 #Pressure drop over fuel heating channels
 cp_air_coeff = cp_polyfit(100, 4, path_air) #air cp is ~constant with pressure changes
@@ -116,10 +116,10 @@ bleed_ratio = 0.1
 OF = 150
 
 "Calculating Turbine Work"
-Tmax_list = np.linspace(350, 500, 100) #K
+Tmax_list = np.linspace(375, 575, 100) #K
 turb_pr = []
 comp_pr = []
-Tmin = 320 #K
+Tmin = 349.65 #K, tmin for half way point for 298.15 atm temp, 120K temp diff and 576K chamber temp
 for Tmax in Tmax_list:
     turbine_specific_power = turbine_work(Tmin, Tmax, cp_100_coeff, True) 
     "Assuming cp only varies with tempurature across the turbine"
@@ -136,7 +136,7 @@ for Tmax in Tmax_list:
     "Calculating Compressor Work"
     
     compressor_specific_power = -(turbine_specific_power+pump_specific_power)/(OF*bleed_ratio)
-    print(compressor_specific_power)
+    print("Compressor Specific Power: ", compressor_specific_power, "kJ/kg/s")
     T_compressor = compressor_temp(T_ambiant, 500, cp_air_coeff, compressor_specific_power) 
     #print("Tempurature at end of compressor: ",T_compressor,"K")
     

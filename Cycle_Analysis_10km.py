@@ -100,7 +100,7 @@ def pump_work(rho, pmin, pmax):
     return pump_specific_power
     
 
-p_ambiant = 0.262 #Pa
+p_ambiant = 26200 #Pa
 T_ambiant = 222.77 #K
 
 cp_100_coeff = cp_polyfit(100, 2, path_pentane)
@@ -109,21 +109,21 @@ cp_50_K = cp_integrand(500, cp_100_coeff)
 "Calculating Pump Work"
 rho = 620 #at 300K, constant with pressure change up till critical pressure (33 bar) and then increases
 pmin = 150000 #Pa, needs to be around 150 kPa or more to ensure condensation at 320K
-cooling_pressure_drop = 300000 #Pressure drop over fuel cooling channels
+cooling_pressure_drop = 600000 #Pressure drop over fuel cooling channels
 heating_pressure_drop = 600000 #Pressure drop over fuel heating channels
 cp_air_coeff = cp_polyfit(100, 4, path_air) #air cp is ~constant with pressure changes
-bleed_ratio = 0.1
-OF = 130
+bleed_ratio = 0.2
+OF = 150
 
 "Calculating Turbine Work"
-Tmax_list = np.linspace(320, 500, 100) #K
+Tmax_list = np.linspace(350, 500, 100) #K
 turb_pr = []
 comp_pr = []
 Tmin = 300 #K
 for Tmax in Tmax_list:
     turbine_specific_power = turbine_work(Tmin, Tmax, cp_100_coeff, True) 
-    "Assuming cp is only varies with tempurature across the turbine"
-    "Resonable assumption as long as there is no phase change"
+    "Assuming cp only varies with tempurature across the turbine"
+    "Resonable approximation as long as there is no phase change"
     turbine_pressure_ratio = T_to_P_ratio(Tmin, Tmax , 1.09)
     print("Turbine Pressure Ratio: ", turbine_pressure_ratio)
     turb_pr.append(turbine_pressure_ratio)

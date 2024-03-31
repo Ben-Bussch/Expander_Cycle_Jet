@@ -94,25 +94,26 @@ def T_to_P_ratio(Tmin, Tmax, gamma):
     return Pr
 
 def pump_work(rho, pmin, pmax):
-    "Assuming constant density fluid (very genrous assumption will need to be worked on"
-    pump_specific_power =(1/rho)*(pmax-pmin)/1000
+    """Assuming constant density fluid (more or less true until critical point
+    at which rho increases so this should be an overestimate of required power)"""
+    pump_specific_power =(1/rho)*(pmax-pmin)/1000 #kJ/kg/s
     return pump_specific_power
     
 
-p_ambiant = 101325 #Pa
+p_ambiant = 26200 #Pa
 T_ambiant = 298.15 #K
 
 cp_100_coeff = cp_polyfit(100, 2, path_pentane)
 cp_50_K = cp_integrand(500, cp_100_coeff)
 
 "Calculating Pump Work"
-rho = 600 #at 320K, more or less constant with pressure change
+rho = 600 #at 300K, constant with pressure change up till critical pressure (33 bar) and then increases
 pmin = 150000 #Pa, needs to be around 150 kPa or more to ensure condensation at 320K
-cooling_pressure_drop = 300000 #Pressure drop over fuel cooling channels
+cooling_pressure_drop = 600000 #Pressure drop over fuel cooling channels
 heating_pressure_drop = 600000 #Pressure drop over fuel heating channels
 cp_air_coeff = cp_polyfit(100, 4, path_air) #air cp is ~constant with pressure changes
-bleed_ratio = 0.18
-OF = 48
+bleed_ratio = 0.1
+OF = 150
 
 "Calculating Turbine Work"
 Tmax_list = np.linspace(350, 500, 100) #K
@@ -121,8 +122,8 @@ comp_pr = []
 Tmin = 320 #K
 for Tmax in Tmax_list:
     turbine_specific_power = turbine_work(Tmin, Tmax, cp_100_coeff, True) 
-    "Assuming cp is only varies with tempurature across the turbine"
-    "Resonable assumption as long as there is no phase change"
+    "Assuming cp only varies with tempurature across the turbine"
+    "Resonable approximation as long as there is no phase change"
     turbine_pressure_ratio = T_to_P_ratio(Tmin, Tmax , 1.09)
     print("Turbine Pressure Ratio: ", turbine_pressure_ratio)
     turb_pr.append(turbine_pressure_ratio)
@@ -157,7 +158,17 @@ plt.plot(turb_pr, comp_pr, label = "Compressor Pressure Ratio")
 plt.ylabel("Compressor Pressure Ratio")
 plt.xlabel("Turbine Pressure Ratio")
 plt.grid()
-plt.savefig('Comp_vs_Turb_0.15_bleed.png', dpi = 400)
+plt.savefig('Comp_vs_Turb_0.15_bleed_10km.png', dpi = 400)
+plt.show()
+
+plt.figure(2)
+plt.title("Compressor Ratio vs net Tempurature Change across Cycle "+str(bleed_ratio)+" Bleed ratio and "+str(OF)+" OF")
+plt.plot(Tmax_list-Tmin, comp_pr, label = "Compressor Pressure Ratio")
+#plt.plot(turb_pr, Tmax_list, label = "Compressor Pressure Ratio")
+plt.ylabel("Compressor Pressure Ratio")
+plt.xlabel("Tempurature difference Across Cycle")
+plt.grid()
+plt.savefig('Comp_vs_delta_T_0.1_bleed_10km.png', dpi = 400)
 plt.show()
 
 

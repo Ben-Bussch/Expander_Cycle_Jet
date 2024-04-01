@@ -100,7 +100,7 @@ def pump_work(rho, pmin, pmax):
     return pump_specific_power
     
 
-p_ambiant = 26200 #Pa
+p_ambiant = 101325 #Pa
 T_ambiant = 298.15 #K
 
 cp_100_coeff = cp_polyfit(100, 2, path_pentane)

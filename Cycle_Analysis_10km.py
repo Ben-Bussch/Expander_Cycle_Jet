@@ -112,7 +112,7 @@ pmin = 150000 #Pa, needs to be around 150 kPa or more to ensure condensation at 
 cooling_pressure_drop = 600000 #Pressure drop over fuel cooling channels
 heating_pressure_drop = 600000 #Pressure drop over fuel heating channels
 cp_air_coeff = cp_polyfit(100, 4, path_air) #air cp is ~constant with pressure changes
-bleed_ratio = 0.2
+bleed_ratio = 0.1
 OF = 150
 
 "Calculating Turbine Work"

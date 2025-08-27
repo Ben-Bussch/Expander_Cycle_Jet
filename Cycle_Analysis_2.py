@@ -145,12 +145,8 @@ for Tmax in Tmax_list:
     P_compressor = compressor_p_ratio*p_ambiant
     comp_pr.append(compressor_p_ratio)
     
-
-
-
-  
+    
 os.chdir(path_graphs)
-
 plt.figure(1)
 plt.title("Compressor Ratio vs Turbine Pressure ratio at "+str(bleed_ratio)+" Bleed ratio and "+str(OF)+" OF")
 plt.plot(turb_pr, comp_pr, label = "Compressor Pressure Ratio")
